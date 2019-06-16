@@ -18,10 +18,10 @@ Provides:
 
 Usage:
 
-#include "VEDirect.h"
+ #include "VEDirect.h"
 
-VEDirect my_bmv(Serial3);
-my_int32 = my_bmv.read(VE_SOC);	
+ VEDirect my_bmv(Serial3);
+ my_int32 = my_bmv.read(VE_SOC);	
 
-// VE_SOC, VE_VOLTAGE, VE_CURRENT, VE_POWER
+ // VE_SOC, VE_VOLTAGE, VE_CURRENT, VE_POWER
 
