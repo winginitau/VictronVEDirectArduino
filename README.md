@@ -16,13 +16,14 @@ Provides:
  - Access to basic energy readings - Volts, Power, Current, State of Charge (SOC)
  - A diagnostic "full dump" of everything coming from the device  
 
-Usage:
-
- #include "VEDirect.h"
-
- VEDirect my_bmv(Serial3);
- 
- my_int32 = my_bmv.read(VE_SOC);	
-
- // VE_SOC, VE_VOLTAGE, VE_CURRENT, VE_POWER
+# Usage:
+    #include "VEDirect.h"
+    
+    VEDirect my_bmv(Serial3);
+    
+    if my_bmv.begin() {
+        my_int32 = my_bmv.read(VE_SOC);
+    }
+    
+    // VE_SOC, VE_VOLTAGE, VE_CURRENT, VE_POWER
 
