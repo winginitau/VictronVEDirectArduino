@@ -16,7 +16,7 @@ Provides:
  - Access to basic energy readings - Volts, Power, Current, State of Charge (SOC)
  - A diagnostic "full dump" of everything coming from the device  
 
-# Usage:
+### Usage:
     #include "VEDirect.h"
     
     VEDirect my_bmv(Serial3);
