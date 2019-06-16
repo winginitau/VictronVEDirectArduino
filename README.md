@@ -8,6 +8,7 @@ Setup:
  - A Victron Energy device that sends serial data using the text version of the VE.Direct protocol
  - A 5v to 3.3v serial converter (BMV is 3.3v - don't plug it directly into an Arduino!)
  - Plugged into the Arduino on a serial port (eg Serial1, Serial2 etc)
+ - See also: https://www.victronenergy.com/live/vedirect_protocol:faq
  - Developed and tested with a BMV-700 battery monitor
  - Distributed under an MIT license - see LICENCE.txt
 
