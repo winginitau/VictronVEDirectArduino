@@ -1,5 +1,5 @@
 # VictronVEDirectArduino
-Lighweight Arduino library to read basic data using the VE.Direct protocol from Victron Energy
+Light-weight Arduino library to read basic data using the VE.Direct protocol from Victron Energy
 
 Built as part of a larger project, now making it available separately in case others find it useful.
 
