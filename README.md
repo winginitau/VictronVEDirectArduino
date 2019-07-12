@@ -11,6 +11,7 @@ Setup:
  - See also: https://www.victronenergy.com/live/vedirect_protocol:faq
  - Developed and tested with a BMV-700 battery monitor
  - Distributed under an MIT license - see LICENCE.txt
+ - Developed and not tested with a MPPT 100/30
 
 Provides:
  - Access to basic energy readings - Volts, Power, Current, State of Charge (SOC)

@@ -141,6 +141,54 @@ int32_t VEDirect::read(uint8_t target) {
 							return ret;
 						}
 						break;
+					case VE_POWER_PV:
+						if (strcmp(label, "PPV") == 0) {
+							sscanf(value, "%ld", &ret);
+							return ret;
+						}
+						break;
+					case VE_VOLTAGE_PV:
+						if (strcmp(label, "VPV") == 0) {
+							sscanf(value, "%ld", &ret);
+							return ret;
+						}
+						break;
+					case VE_YIELD_TOTAL:
+						if (strcmp(label, "H19") == 0) {
+							sscanf(value, "%ld", &ret);
+							return ret;
+						}
+						break;
+					case VE_YIELD_TODAY:
+						if (strcmp(label, "H20") == 0) {
+							sscanf(value, "%ld", &ret);
+							return ret;
+						}
+						break;
+					case VE_YIELD_YESTERDAY:
+						if (strcmp(label, "H22") == 0) {
+							sscanf(value, "%ld", &ret);
+							return ret;
+						}
+						break;
+					case VE_POWER_MAX_TODAY:
+						if (strcmp(label, "H21") == 0) {
+							sscanf(value, "%ld", &ret);
+							return ret;
+						}
+						break;
+					case VE_ERROR:
+						if (strcmp(label, "ERR") == 0) {
+							sscanf(value, "%ld", &ret);
+							return ret;
+						}
+						break;
+					case VE_STATE:
+						if (strcmp(label, "CS") == 0) {
+							sscanf(value, "%ld", &ret);
+							return ret;
+						}
+						break;
 					default:
 						break;
 				}
