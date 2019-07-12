@@ -16,6 +16,25 @@
 // 32 bit ints to collect the data from the device
 int32_t VE_soc, VE_power, VE_voltage, VE_current, VE_power_pv, VE_voltage_pv, VE_yield_total, VE_yield_today, VE_yield_yesterday, VE_power_max_today, VE_power_max_yesterday, VE_error, VE_state;
 
+String CS0 = "Off";
+String CS2 = "Fault";
+String CS3 = "Bulk";
+String CS4 = "Absorption";
+String CS5 = "Float";
+String ERR0 = "No error";
+String ERR2 = "Battery voltage too high";
+String ERR17 = "Charger voltage too high";
+String ERR18 = "Charger over current";
+String ERR20 = "Bulk time limit exceeded";
+String ERR21 = "Current sensor issue";
+String ERR26 = "Terminals overheated";
+String ERR33 = "Input Voltage too high (solar panel)";
+String ERR34 = "Input current too high (solar panel)";
+String ERR38 = "Input shutdown (due to excessive battery voltage)";
+String ERR116 = "Factory calibration lost";
+String ERR117 = "invalied/incompatible firmware";
+String ERR119 = "User settings invalid";
+
 // VEDirect instantiated with relevant serial object
 VEDirect myve(Serial3);
 
@@ -71,8 +90,20 @@ void loop() {
 	Serial.println(VE_power_max_yesterday, DEC);
 	Serial.print("Error Code             ");
 	Serial.println(VE_error, DEC);
+	Serial.print("Error Code             ");
+	if (VE_error == 0){Serial.println(ERR0);}
+	if (VE_error == 2){Serial.println(ERR2);}
+	if (VE_error == 17){Serial.println(ERR17);}
+	if (VE_error == 18){Serial.println(ERR18);}
+	if (VE_error == 20){Serial.println(ERR20);}
 	Serial.print("State of operation     ");
 	Serial.println(VE_state, DEC);
+	Serial.print("State of operation     ");
+	if (VE_state == 0){Serial.println(CS0);}
+	if (VE_state == 2){Serial.println(CS2);}
+	if (VE_state == 3){Serial.println(CS3);}
+	if (VE_state == 4){Serial.println(CS4);}
+	if (VE_state == 5){Serial.println(CS5);}
 	Serial.println();
 
 	// Copy the raw data stream (excluding the checkdum line and byte) to Serial0
