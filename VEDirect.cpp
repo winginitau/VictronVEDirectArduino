@@ -6,8 +6,10 @@
 
  See README.md
 
- File: VEDirect.h
- - Class / enums / API
+ File: VEDirect.cpp
+ - Implementation
+ Updates:
+ - 2019-07-14 See VEDirect.h
 ******************************************************************/
 
 #include "VEDirect.h"
@@ -39,209 +41,76 @@ uint8_t VEDirect::begin() {
 }
 
 int32_t VEDirect::read(uint8_t target) {
-	// Read VE.Direct text blocks from the serial port
-	// Search for the label specified by enum target_label
-	// Extract and return the corresponding value.
+	// Read VE.Direct lines from the serial port
+	// Search for the label specified by enum target
+	// Extract and return the corresponding value
+	// If value is "ON" return 1. If "OFF" return 0;
 
+	uint16_t loops = VED_MAX_READ_LOOPS;
+	uint8_t lines = VED_MAX_READ_LINES;
 	int32_t ret = 0;					// The value to be returned
-	char VE_line[VED_LINE_SIZE];		// Line buffer
+	char line[VED_LINE_SIZE] = "\0";	// Line buffer
+	uint8_t idx = 0;					// Line buffer index
 	char* label;
-	char* value;
-	uint8_t buf_idx = 0;
+	char* value_str;
+	int8_t b;							// byte read from the stream
 
-	const char delim[2] = "\t";			// Delim between label and value
-	// Simple state machine as to navigate the
-	// flow of text data that that is sent every second
-	uint8_t block_count = 0;
-	uint8_t cr = 0;
-	uint8_t checksum = 0;
+	VESerial.begin(VED_BAUD_RATE);
 
-	uint8_t b;							// byte read from the stream
-
-	VESerial.begin(19200);
-
-	if (VESerial) {
-		// BMV continuously transmits 2x text data blocks to deliver all data.
-		// Read 3x times, discarding the first (likely) partial block,
-		// to get the two complete data blocks.
-		while (block_count < 3) {
-			if (VESerial.available()) {
-				// Get the next byte from the serial stream
+	while (lines > 0) {
+		if (VESerial.available()) {
+			while (loops > 0) {
 				b = VESerial.read();
-				switch (b) {
-					case '\n':  // start of newline - reset read buffer
-						cr = 0;
-						VE_line[0] = '\0';
-						buf_idx = 0;
+				if ((b == -1) || (b == '\r')) { 	// Ignore '\r' and empty reads
+					loops--;
+				} else {
+					if (b == '\n') { 				// EOL
 						break;
-					case '\r': // eol - terminate the buffer
-						cr = 1;
-						VE_line[buf_idx] = '\0';
-						buf_idx++;
-						break;
-					default:
-						// Is the checksum expected?
-						if (checksum) {
-							// TODO: Capture it and use it later
-							// Currently: just ignore it and the preceding \t
-							// Assume eol, reset and increment the block_count
-							if (b != '\t') {
-								// then it a checksum byte
-								cr = 0;
-								VE_line[0] = '\0';
-								buf_idx = 0;
-								block_count++;
-								checksum = 0;
-							} // no else - was the \t before, ignore
+					} else {
+						if (idx < VED_LINE_SIZE) {
+							line[idx++] = b;		// Add it to the buffer
 						} else {
-							// Normal char of interest
-							// Clear cr flag which may have been set
-							cr = 0;
-							// Add the char to the buffer
-							VE_line[buf_idx] = b;
-							buf_idx++;
-							// Check for the Checksum label
-							// Turn on flag to trigger checksum
-							// \t and byte capture on next loops
-							if (strncmp(VE_line, "Checksum", 8) == 0) {
-								VE_line[8] = '\0';
-								checksum = 1;
-							}
+							return 0;				// Buffer overrun
 						}
+					}
 				}
 			}
-			// Evaluate the flags and buffer contents
-			if (cr && buf_idx) {
-				// whole line in buffer
-				label = strtok(VE_line, delim);
-				value = strtok(0, delim);
-				// Look for the label passed requested on he call
-				switch (target) {
-					case VE_SOC:
-						if (strcmp(label, "SOC") == 0) {
-							sscanf(value, "%ld", &ret);
-							return ret;
-						}
+			line[idx] = '\0';						// Terminate the string
+
+			// Line in buffer
+			if (target == VE_DUMP) {
+				// Diagnostic routine - just print to Serial0;
+				Serial.println(line);
+				// Continue on rather than break to reset for next line
+			}
+
+			label = strtok(line, "\t");
+			if (strcmp_P(label, ved_labels[target]) == 0) {
+				value_str = strtok(0, "\t");
+				if (value_str[0] == 'O') { 		//ON OFF type
+					if (value_str[1] == 'N') {
+						ret = 1;	// ON
 						break;
-					case VE_VOLTAGE:
-						if (strcmp(label, "V") == 0) {
-							sscanf(value, "%ld", &ret);
-							return ret;
-						}
+					} else {
+						ret = 0;	// OFF
 						break;
-					case VE_POWER:
-						if (strcmp(label, "P") == 0) {
-							sscanf(value, "%ld", &ret);
-							return ret;
-						}
-						break;
-					case VE_CURRENT:
-						if (strcmp(label, "I") == 0) {
-							sscanf(value, "%ld", &ret);
-							return ret;
-						}
-						break;
-					default:
-						break;
+					}
+				} else {
+					sscanf(value_str, "%ld", &ret);
+					break;
 				}
+			} else {			// Line not of interest
+				lines--;
+				loops = VED_MAX_READ_LOOPS;
+				line[0] = '\0';
+				idx = 0;
 			}
 		}
-		// Tidy up
-		VESerial.flush();
-		VESerial.end();
 	}
 	return ret;
 }
 
 void VEDirect::copy_raw_to_serial0() {
-	// Read VE.Direct text blocks from the serial port
-	// Buffer them and then print them to Serial
-	// *******
-	// NOTE: 	Do not use this function for anything serious
-	//			To allow lower Serial0 speed (eg 9600) it buffers
-	//			the input from the VE device (at 19200) and then prints it
-	// 			It is memory / malloc ugly and without fail safes
-	//			Only useful for	low level port dumping
-
-	typedef struct BUFFER {
-		char* line;
-		struct BUFFER* next;
-	} bufline;
-
-	bufline* head = (bufline *)malloc(sizeof(bufline));
-	head->next = NULL;
-	bufline* walker = head;
-
-	char VE_line[VED_LINE_SIZE];		// Line buffer
-	uint8_t buf_idx = 0;
-
-	// Simple state machine as to navigate the
-	// flow of text data that that is sent every second
-	uint8_t block_count = 0;
-	uint8_t newline = 0;
-
-	uint8_t b;							// byte read from the stream
-
-	VESerial.begin(19200);
-
-	if (VESerial) {
-		// BMV continuously transmits 2x text data blocks to deliver all data.
-		// Read 3x times, discarding the first (likely) partial block,
-		// to get the two complete data blocks.
-		while (block_count < 15) {
-			if (VESerial.available()) {
-				// Get the next byte from the serial stream
-				b = VESerial.read();
-				switch (b) {
-					case '\r':
-						break;
-					case '\n': // terminate the buffer
-						newline = 1;
-						VE_line[buf_idx] = '\0';
-						break;
-					default:
-						// Normal char of interest
-						newline = 0;
-						// Add the char to the buffer
-						VE_line[buf_idx] = b;
-						buf_idx++;
-
-						if (strncmp(VE_line, "Checksum", 8) == 0) {
-							VE_line[8] = '\0';
-							block_count++;
-						}
-
-				}
-			}
-			// Evaluate the flags and buffer contents
-			if (newline && buf_idx) {
-				// whole line in buffer
-				walker->line = (char *)malloc(strlen(VE_line) +10);
-				strcpy(walker->line, VE_line);
-				walker->next =(bufline *)malloc(sizeof(bufline));
-				walker = walker->next;
-				walker->next = NULL;
-
-				newline = 0;
-				VE_line[0] = '\0';
-				buf_idx = 0;
-
-			}
-		}
-		// print it all
-		Serial.println("Out of collect loop");
-		walker = head;
-		while (walker->next != NULL) {
-			Serial.println(walker->line);
-			free(walker->line);
-			walker = walker->next;
-			free(head);
-			head = walker;
-		}
-		free(head);
-
-		// Tidy up
-		VESerial.flush();
-		VESerial.end();
-	}
+	read(VE_DUMP);
 }
+
