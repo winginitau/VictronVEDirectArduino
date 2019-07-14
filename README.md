@@ -1,9 +1,5 @@
 # VictronVEDirectArduino
-<<<<<<< HEAD
 Lightweight Arduino library to read basic data using the VE.Direct protocol from Victron Energy
-=======
-Light-weight Arduino library to read basic data using the VE.Direct protocol from Victron Energy
->>>>>>> 09b3fd8f589dad5d31574392ac3017b3de51ffcd
 
 Built as part of a larger project, now making it available separately in case others find it useful.
 
@@ -22,7 +18,6 @@ Provides:
  - Easily extendible by adding labels for any other stats and settings of interest
  - A diagnostic "full dump" of everything coming from the device  
 
-<<<<<<< HEAD
 Usage:
 
 #include "VEDirect.h"
@@ -30,16 +25,4 @@ Usage:
 VEDirect my_bmv(Serial3);
 my_int32 = my_bmv.read(VE_SOC);	
 // VE_SOC, VE_VOLTAGE, VE_CURRENT, VE_POWER, VE_ALARM
-=======
-### Usage:
-    #include "VEDirect.h"
-    
-    VEDirect my_bmv(Serial3);
-    
-    if my_bmv.begin() {
-        my_int32 = my_bmv.read(VE_SOC);
-    }
-    
-    // VE_SOC, VE_VOLTAGE, VE_CURRENT, VE_POWER
->>>>>>> 09b3fd8f589dad5d31574392ac3017b3de51ffcd
 
