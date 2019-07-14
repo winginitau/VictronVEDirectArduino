@@ -18,11 +18,13 @@ Provides:
  - Easily extendible by adding labels for any other stats and settings of interest
  - A diagnostic "full dump" of everything coming from the device  
 
-Usage:
-
+### Usage:
+```C
 #include "VEDirect.h"
 
 VEDirect my_bmv(Serial3);
 my_int32 = my_bmv.read(VE_SOC);	
+
 // VE_SOC, VE_VOLTAGE, VE_CURRENT, VE_POWER, VE_ALARM
+```
 
