@@ -6,7 +6,7 @@
 
  See README.md
 
- File: example.ino / example.cpp
+ File: ReadVEDirect.ino / ReadVEDirect.cpp
  - Provides example use of the VEDirect library
 ******************************************************************/
 
