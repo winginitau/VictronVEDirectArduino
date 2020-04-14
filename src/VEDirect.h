@@ -55,7 +55,7 @@ const char ved_labels[VE_LAST_LABEL][VED_MAX_LEBEL_SIZE] PROGMEM = {
 
 class VEDirect {
 public:
-	VEDirect();
+	VEDirect(byte rxPin, byte txPin);
 	virtual ~VEDirect();
 	uint8_t begin();
 	int32_t read(uint8_t target);
