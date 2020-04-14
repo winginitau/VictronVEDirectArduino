@@ -15,13 +15,17 @@
 #include "Arduino.h"
 #include "VEDirect.h"
 
+// Serial pins
+#define rxPin D7
+#define txPin D8
+
 // 32 bit ints to collect the data from the device
 int32_t VE_soc, VE_power, VE_voltage, VE_current;
 // Boolean to collect an ON/OFF value
 uint8_t VE_alarm;
 
 // VEDirect instantiated with relevant serial object
-VEDirect myve;
+VEDirect myve(rxPin, txPin);
 
 void setup() {
 	Serial.begin(19200);		// Adjust as needed - DEBUG serial port
