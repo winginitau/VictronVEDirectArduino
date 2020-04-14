@@ -15,12 +15,9 @@
 
 #include "VEDirect.h"
 
-// Serial variables
-#define rxPin D7
-#define txPin D8 
-
 VEDirect::VEDirect():
-	VESerial (*new SoftwareSerial(rxPin, txPin))
+VEDirect::VEDirect(byte rxPin, byte txPin):
+	VESerial(*new SoftwareSerial(rxPin, txPin))
 	// Initialise the serial port that the
 	// VE.Direct device is connected to and
 	// store it for later use.
