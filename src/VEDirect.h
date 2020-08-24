@@ -1,7 +1,7 @@
 /******************************************************************
  VEDirect Arduino
 
- Copyright 2018, 2019, Brendan McLearie
+ Copyright 2018, 2019, 2020 Brendan McLearie
  Distributed under MIT license - see LICENSE.txt
 
  See README.md
@@ -15,6 +15,8 @@
   	  - Target labels extendible with enum and PROGMEM strings
   	  - Retired copy_raw_to_serial0() code - use VE_DUMP on read
   	  - Added some tunable parameters see #defines
+ - 2020-08-24 - Contribution of Rickard Nordström Pettersson
+  	  - Added VE_SOC, VE_POWER, VE_ALARM for BMW devices
 ******************************************************************/
 
 #ifndef VEDIRECT_H_
@@ -24,7 +26,7 @@
 
 // Tunable parameters - defaults tested on mega2560 R3
 #define VED_LINE_SIZE 40		 // Seems to be plenty. VE.Direct protocol could change
-#define VED_MAX_LEBEL_SIZE 17	 // Max length of all labels of interest + '\0'. See ved_labels[]
+#define VED_MAX_LEBEL_SIZE 20	 // Max length of all labels of interest + '\0'. See ved_labels[]
 #define VED_MAX_READ_LOOPS 60000 // How many read loops to be considered a read time-out
 #define VED_MAX_READ_LINES 50	 // How many lines to read looking for a value
 								 // before giving up. Also determines lines for diag dump
@@ -48,6 +50,9 @@ enum VE_DIRECT_DATA {
 	VE_YIELD_YESTERDAY,
 	VE_POWER_MAX_YESTERDAY,
 	VE_DAY_SEQUENCE_NUMBER,
+	VE_SOC,
+	VE_POWER,
+	VE_ALARM,
 	VE_LAST_LABEL,
 };
 
@@ -68,6 +73,9 @@ const char ved_labels[VE_LAST_LABEL][VED_MAX_LEBEL_SIZE] PROGMEM = {
 		"H22",
 		"H23",
 		"HSDS",
+		"SOC",
+		"P",
+		"Alarm"
 };
 
 class VEDirect {
