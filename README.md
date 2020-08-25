@@ -6,7 +6,8 @@ Built as part of a larger project, now making it available separately in case ot
 Setup:
  - An Arduino(ish) board, works on Particle devices like Particle Photon and Particle Argon
  - A Victron Energy device that sends serial data using the text version of the VE.Direct protocol (little different values for different devices)
-  - A 5v to 3.3v serial converter (BMV is 3.3v - don't plug it directly into an Arduino!)
+ - A 5v to 3.3v serial converter (BMV is 3.3v - don't plug it directly into an Arduino!)
+ - Good to know is hat BMW-712 takes 3.3v in the VE.Direct port but the SmartSolar MPPT 75/15 need 5v to communicate on the VE.Direct port
  - Plugged into the Arduino on a serial port (eg Serial1, Serial2 etc)
  - See also: https://www.victronenergy.com/live/vedirect_protocol:faq
  - Distributed under an MIT license - see LICENCE.txt
