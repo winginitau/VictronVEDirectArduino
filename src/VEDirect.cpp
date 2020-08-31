@@ -11,11 +11,11 @@
  Updates:
  - 2019-07-14 See VEDirect.h
  - 2020-04-10 Converted to SoftwareSerial, added checks for null pointers for ESP8266
+ - 2020-08-31 Removed errant constructor
 ******************************************************************/
 
 #include "VEDirect.h"
 
-VEDirect::VEDirect():
 VEDirect::VEDirect(byte rxPin, byte txPin):
 	VESerial(*new SoftwareSerial(rxPin, txPin))
 	// Initialise the serial port that the
