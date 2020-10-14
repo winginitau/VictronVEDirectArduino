@@ -17,12 +17,18 @@ Provides:
  - Defaults set to read Volts, Power, Current, State of Charge (SOC), Alarm
  - Easily extendible by adding labels for any other stats and settings of interest
  - A diagnostic "full dump" of everything coming from the device  
+ 
+ This branch implements SoftwareSerial primarily for ESP8266 boards that need their native USB port for debug purposes.
 
 ### Usage:
 ```C
 #include "VEDirect.h"
 
-VEDirect my_bmv(Serial3);
+// Serial pins
+#define rxPin D7
+#define txPin D8
+
+VEDirect my_bmv(rxPin, txPin);
 my_int32 = my_bmv.read(VE_SOC);	
 
 // VE_SOC, VE_VOLTAGE, VE_CURRENT, VE_POWER, VE_ALARM

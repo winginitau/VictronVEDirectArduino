@@ -15,12 +15,15 @@
   	  - Target labels extendible with enum and PROGMEM strings
   	  - Retired copy_raw_to_serial0() code - use VE_DUMP on read
   	  - Added some tunable parameters see #defines
+ - 2020-04-10:
+	  - Convert to SoftwareSerial so ESP8266 can use native usb serial for debug
 ******************************************************************/
 
 #ifndef VEDIRECT_H_
 #define VEDIRECT_H_
 
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 
 // Tunable parameters - defaults tested on mega2560 R3
 #define VED_LINE_SIZE 30		 // Seems to be plenty. VE.Direct protocol could change
@@ -52,13 +55,13 @@ const char ved_labels[VE_LAST_LABEL][VED_MAX_LEBEL_SIZE] PROGMEM = {
 
 class VEDirect {
 public:
-	VEDirect(HardwareSerial& port);
+	VEDirect(byte rxPin, byte txPin);
 	virtual ~VEDirect();
 	uint8_t begin();
 	int32_t read(uint8_t target);
 	void copy_raw_to_serial0(); // kept for backwards compatibility
 private:
-	HardwareSerial& VESerial;
+	SoftwareSerial& VESerial;
 };
 
 #endif /* VEDIRECT_H_ */

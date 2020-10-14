@@ -10,12 +10,14 @@
  - Implementation
  Updates:
  - 2019-07-14 See VEDirect.h
+ - 2020-04-10 Converted to SoftwareSerial, added checks for null pointers for ESP8266
+ - 2020-08-31 Removed errant constructor
 ******************************************************************/
 
 #include "VEDirect.h"
 
-VEDirect::VEDirect(HardwareSerial& port):
-	VESerial(port)
+VEDirect::VEDirect(byte rxPin, byte txPin):
+	VESerial(*new SoftwareSerial(rxPin, txPin))
 	// Initialise the serial port that the
 	// VE.Direct device is connected to and
 	// store it for later use.
@@ -28,7 +30,7 @@ VEDirect::~VEDirect() {
 
 uint8_t VEDirect::begin() {
 	// Check connection the serial port
-	VESerial.begin(19200);
+	VESerial.begin(VED_BAUD_RATE);
 	if (VESerial) {
 		delay(500);
 		if(VESerial.available()) {
@@ -85,26 +87,30 @@ int32_t VEDirect::read(uint8_t target) {
 			}
 
 			label = strtok(line, "\t");
-			if (strcmp_P(label, ved_labels[target]) == 0) {
-				value_str = strtok(0, "\t");
-				if (value_str[0] == 'O') { 		//ON OFF type
-					if (value_str[1] == 'N') {
-						ret = 1;	// ON
-						break;
-					} else {
-						ret = 0;	// OFF
-						break;
-					}
-				} else {
-					sscanf(value_str, "%ld", &ret);
-					break;
+			if (label) {
+				if (strcmp_P(label, ved_labels[target]) == 0) {
+					value_str = strtok(0, "\t");
+					if (value_str) {
+						if (value_str[0] == 'O') { 		//ON OFF type
+							if (value_str[1] == 'N') {
+								ret = 1;	// ON
+								break;
+							} else {
+								ret = 0;	// OFF
+								break;
+							}
+						} else {
+							sscanf(value_str, "%ld", &ret);
+							break;
+						}
+					}	
+				} else {			// Line not of interest
+					lines--;
+					loops = VED_MAX_READ_LOOPS;
+					line[0] = '\0';
+					idx = 0;
 				}
-			} else {			// Line not of interest
-				lines--;
-				loops = VED_MAX_READ_LOOPS;
-				line[0] = '\0';
-				idx = 0;
-			}
+			}	
 		}
 	}
 	return ret;
